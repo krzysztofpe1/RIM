@@ -22,4 +22,4 @@ services:
       - MQTT_BROKER=mqtt-broker
       - MQTT_PORT=1883
       - MQTT_TOPIC=sensor/data
-    network_mode: "host"
+    # network_mode: "host"
