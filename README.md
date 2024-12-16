@@ -8,5 +8,4 @@ RIM stands for Road Infrastructure Maintenance. This is a set of applications me
  1. RabbitMQ docker image
  2. MongoDB docker image
  3. Data Generator - pushes data from sensors into the queue system
- 4. Data Retriever - retrieves data from the queue and persists it in the NOSQL database
- 5. Frontend App - privides views with several business features
+ 4. Core Application - retrieves data from the queue and persists it in the NOSQL database, facilitates web views to look through data and download it in requested format
