@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/source_code/docker-data/mongo/data/db
