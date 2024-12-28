@@ -1,20 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MongoDB.Bson;
+using RIM.App.Database.DataModels;
+using RIM.App.Database.Repositories;
 
-namespace RIM.App.Pages
+namespace RIM.App.Pages;
+
+public class IndexModel(SpeedSensorsRepository repository) : PageModel
 {
-    public class IndexModel : PageModel
+    public void OnGet()
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
-        }
+        
     }
 }

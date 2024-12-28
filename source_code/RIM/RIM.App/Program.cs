@@ -5,9 +5,12 @@ namespace RIM.App
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var services = builder.Services;
 
             // Add services to the container.
-            builder.Services.AddRazorPages();
+            services.AddRazorPages();
+
+            services.ConfigureServices();
 
             var app = builder.Build();
 

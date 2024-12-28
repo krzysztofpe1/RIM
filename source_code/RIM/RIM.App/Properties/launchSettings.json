@@ -4,10 +4,12 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_CONNECTION_STRING": "mongodb://RIMuser:zaq1@WSX@mongodb:27017"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5117"
+      "applicationUrl": "http://localhost:8181",
+      "nativeDebugging": true
     },
     "https": {
       "commandName": "Project",
@@ -31,10 +33,19 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "MONGO_CONNECTION_STRING": "mongodb://RIMuser:zaq1@WSX@mongodb:27017"
       },
       "publishAllPorts": true,
       "useSSL": true
+    },
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "composeLaunchServiceName": "rim-app",
+      "commandVersion": "v1",
+      "dockerComposeDebugServiceName": "rim-app"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
