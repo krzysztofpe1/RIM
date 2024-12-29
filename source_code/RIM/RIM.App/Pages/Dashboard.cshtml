@@ -1,0 +1,56 @@
+﻿@page
+@model RIM.App.Pages.DashboardModel
+@{
+}
+
+@section Styles
+{
+    <link href="css/Dashboard.css" rel="stylesheet"/>
+}
+
+<div id="dashboard">
+    <!-- The sensors' data will be dynamically injected here -->
+</div>
+
+@section Scripts
+{
+    <script>
+        async function callHandler() {
+            try {
+                const response = await fetch('/dashboard?handler=Refresh');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateDashboard(data);
+                } else {
+                    console.error('Failed to call handler:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error while calling handler:', error);
+            }
+        }
+
+        function updateDashboard(sensors) {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.innerHTML = ''; // Clear existing content
+
+            sensors.forEach(sensor => {
+                // Create a container for each sensor
+                const sensorDiv = document.createElement('div');
+                sensorDiv.classList.add('sensor');
+
+                // Populate sensor data
+                sensorDiv.innerHTML = `
+                    <h3>Sensor ID: ${sensor.sensorId}</h3>
+                    <p>Type: ${sensor.sensorType}</p>
+                    <p>Latest Value: ${sensor.latestValue.toFixed(2)}</p>
+                    <p>Average (Last 100): ${sensor.averageLatest100Value.toFixed(2)}</p>
+                `;
+
+                dashboard.appendChild(sensorDiv);
+            });
+        }
+
+        // Call the handler every 2 seconds
+        setInterval(callHandler, 2000);
+    </script>
+}

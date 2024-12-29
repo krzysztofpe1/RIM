@@ -80,10 +80,13 @@
             }
         </tbody>
     </table>
-    <div id="sensorsGraph" class="d-none"></div>
+    <div id="sensorsGraph" class="d-none">
+        <canvas id="sensorChart" width="400" height="200"></canvas>
+    </div>
 </section>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const table = document.querySelector('.sortable-table');
@@ -127,4 +130,55 @@
             graph.classList.toggle('d-none');
         }
     </script>
+    <script>
+        // Parse the sensor data provided by Razor Pages
+        const sensorData = @Html.Raw(Json.Serialize(Model.Results));
+
+        // Extract labels and data
+        const labels = sensorData.map(data => {
+            const date = new Date(data.CreatedAt);
+            return !isNaN(date) ? date.toLocaleString() : "Invalid Date"; // Add fallback if date parsing fails
+        });
+
+        const values = sensorData.map(data => data.Value);
+
+        // Debugging: Log data to console
+        console.log("Sensor Data:", sensorData);
+        console.log("Labels:", labels);
+        console.log("Values:", values);
+
+        // Create a chart
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line', // Change to other types like 'bar' if needed
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sensor Values',
+                    data: values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
 }

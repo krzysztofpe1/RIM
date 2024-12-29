@@ -34,11 +34,41 @@ public class SensorsDataService(SensorDataModelRepository repository)
         return repository.GetByFilter(filterModel).Select(ConversionFunc).ToList();
     }
 
+    public List<ViewDashboardSensor> GetSensorCompactData()
+    {
+        var sensorsData = repository.GetAll();
+        var sensorIds = sensorsData.Select(x => x.SensorId).Distinct();
+
+        var results = new List<ViewDashboardSensor>();
+
+        foreach (var sensorId in sensorIds)
+        {
+
+            var relevantSensorData = sensorsData.Where(x => x.SensorId == sensorId).OrderByDescending(x => x.Timestamp);
+            if (!relevantSensorData.Any())
+                continue;
+
+            var first = relevantSensorData.First();
+
+            var dashboardItem = new ViewDashboardSensor()
+            {
+                SensorId = sensorId,
+                SensorType = Enum.Parse<ViewSensorType>(first.SensorType.ToString()),
+                LatestValue = first.Value,
+                AverageLatest100Value = relevantSensorData.Take(100).Average(x => x.Value),
+            };
+
+            results.Add(dashboardItem);
+        }
+
+        return results.OrderBy(x => x.SensorId).ToList();
+    }
+
     public long GetPagesCountForPageSize(FilterModel filterModel)
     {
         var count = repository.GetCount(filterModel);
-        if(filterModel is {ResultsPerPage: not null})
-            return count/ filterModel.ResultsPerPage.Value;
+        if (filterModel is { ResultsPerPage: not null })
+            return count / filterModel.ResultsPerPage.Value;
         return 1;
     }
 
