@@ -1,14 +1,17 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MQTTnet.Client;
 using MQTTnet;
 using RIM.App.Configurations;
+using RIM.App.Database.DataModels;
+using RIM.App.Database.Repositories;
 using RIM.App.Mqtt.DataModels;
 using RIM.App.Utils;
 
 namespace RIM.App.Mqtt;
 
-public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, ILogger<MqttHostedService> logger)
+public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, ILogger<MqttHostedService> logger, IServiceScopeFactory serviceScopeFactory)
     : IHostedService
 {
     #region Private Variables
@@ -24,11 +27,10 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
     {
         logger.LogWarning($"Disconnected from MQTT broker. Reason: {e.Reason}");
 
-        // Automatyczna próba ponownego połączenia
         await Task.Delay(TimeSpan.FromSeconds(5));
         try
         {
-            await _mqttClient!.ReconnectAsync();
+            await _mqttClient.ReconnectAsync();
             logger.LogInformation("Reconnected to MQTT broker.");
         }
         catch (Exception ex)
@@ -65,21 +67,58 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
 
     private void HandleSensorData(SensorData data)
     {
-        logger.LogInformation($"Received Sensor Data: \"Sensor ID: {data.SensorId}, Type: {data.SensorType}, Value: {data.Value}, Timestamp: {data.Timestamp}\".");
-        switch (data.SensorType)
+        try
         {
-            case SensorType.Speed:
-
-                break;
-            case SensorType.Light:
-
-                break;
-            case SensorType.Temperature:
-
-                break;
-            case SensorType.Vibration:
-
-                break;
+            logger.LogInformation(
+                $"Received Sensor Data: \"Sensor ID: {data.SensorId}, Type: {data.SensorType}, Value: {data.Value}, Timestamp: {data.Timestamp}\".");
+            var serciceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+            switch (data.SensorType)
+            {
+                case SensorType.Speed:
+                    var speedModel = new SpeedModel()
+                    {
+                        Id = ObjectId.Empty,
+                        SensorId = data.SensorId,
+                        SpeedValue = data.Value,
+                        CreatedAt = data.Timestamp
+                    };
+                    serciceProvider.GetRequiredService<SpeedRepository>().Insert(speedModel);
+                    break;
+                case SensorType.Light:
+                    var lightModel = new LightIntensityModel()
+                    {
+                        Id = ObjectId.Empty,
+                        SensorId = data.SensorId,
+                        LightIntensityValue = data.Value,
+                        CreatedAt = data.Timestamp
+                    };
+                    serciceProvider.GetRequiredService<LightIntensityRepository>().Insert(lightModel);
+                    break;
+                case SensorType.Temperature:
+                    var temperatureModel = new SurfaceTemperatureModel()
+                    {
+                        Id = ObjectId.Empty,
+                        SensorId = data.SensorId,
+                        SurfaceTemperatureValue = data.Value,
+                        CreatedAt = data.Timestamp
+                    };
+                    serciceProvider.GetRequiredService<SurfaceTemperatureRepository>().Insert(temperatureModel);
+                    break;
+                case SensorType.Vibration:
+                    var vibrationsModel = new VibrationsModel()
+                    {
+                        Id = ObjectId.Empty,
+                        SensorId = data.SensorId,
+                        VibrationsValue = data.Value,
+                        CreatedAt = data.Timestamp
+                    };
+                    serciceProvider.GetRequiredService<VibrationsRepository>().Insert(vibrationsModel);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning("Failed to persist sensor data. Exception message: " + ex.Message);
         }
     }
 
@@ -127,7 +166,6 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
 
         _mqttClient = new MqttFactory().CreateMqttClient();
 
-        // Przypisanie obsługi zdarzeń
         _mqttClient.DisconnectedAsync += HandleDisconnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
 

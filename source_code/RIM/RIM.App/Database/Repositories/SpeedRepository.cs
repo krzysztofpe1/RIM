@@ -6,7 +6,7 @@ using RIM.App.Database.DataModels;
 
 namespace RIM.App.Database.Repositories;
 
-public class SpeedSensorsRepository(IMongoClient mongoClient, IOptions<RimDbSettings> dbSettings)
+public class SpeedRepository(IMongoClient mongoClient, IOptions<RimDbSettings> dbSettings)
     : MongoDbRepositoryBase<SpeedModel>(mongoClient, dbSettings.Value.DatabaseName, dbSettings.Value.SpeedCollectionName)
 {
     public List<SpeedModel> GetAll() => Collection.Find(_ => true).ToList();

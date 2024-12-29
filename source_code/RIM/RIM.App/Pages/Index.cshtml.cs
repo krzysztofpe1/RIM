@@ -5,7 +5,7 @@ using RIM.App.Database.Repositories;
 
 namespace RIM.App.Pages;
 
-public class IndexModel(SpeedSensorsRepository repository) : PageModel
+public class IndexModel(SpeedRepository repository) : PageModel
 {
     public void OnGet()
     {

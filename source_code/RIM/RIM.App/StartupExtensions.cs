@@ -38,7 +38,7 @@ public static class StartupExtensions
 
     private static void AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<SpeedSensorsRepository>();
+        services.AddScoped<SpeedRepository>();
         services.AddScoped<LightIntensityRepository>();
         services.AddScoped<SurfaceTemperatureRepository>();
         services.AddScoped<VibrationsRepository>();
