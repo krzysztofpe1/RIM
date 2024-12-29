@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using RIM.App.Configurations;
 using RIM.App.Database.DataModels;
 
 namespace RIM.App.Database.Repositories;

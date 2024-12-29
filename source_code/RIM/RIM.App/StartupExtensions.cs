@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using RIM.App.Database;
+using RIM.App.Configurations;
 using RIM.App.Database.Repositories;
+using RIM.App.Mqtt;
 
 namespace RIM.App;
 
@@ -15,9 +16,14 @@ public static class StartupExtensions
         services.AddMqtt();
     }
 
+    public static IConfiguration GetConfiguration(this IServiceCollection services)
+    {
+        return services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+    }
+
     private static void ConfigureMongoDbClient(this IServiceCollection services)
     {
-        var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        var configuration = services.GetConfiguration();
         // Adding Mongo Db Context
         services.Configure<RimDbSettings>(configuration.GetSection("MongoDb"));
 
@@ -40,7 +46,10 @@ public static class StartupExtensions
 
     private static void AddMqtt(this IServiceCollection services)
     {
+        var configuration = services.GetConfiguration();
+        services.Configure<MqttClientSettings>(configuration.GetSection("MQTT"));
 
+        services.AddHostedService<MqttHostedService>();
     }
 
 }
