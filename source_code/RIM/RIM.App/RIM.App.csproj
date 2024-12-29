@@ -14,8 +14,4 @@
     <PackageReference Include="MQTTnet.AspNetCore" Version="4.3.7.1207" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

@@ -79,7 +79,7 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
                     {
                         Id = ObjectId.Empty,
                         SensorId = data.SensorId,
-                        SpeedValue = data.Value,
+                        Value = data.Value,
                         CreatedAt = data.Timestamp
                     };
                     serciceProvider.GetRequiredService<SpeedRepository>().Insert(speedModel);
@@ -89,7 +89,7 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
                     {
                         Id = ObjectId.Empty,
                         SensorId = data.SensorId,
-                        LightIntensityValue = data.Value,
+                        Value = data.Value,
                         CreatedAt = data.Timestamp
                     };
                     serciceProvider.GetRequiredService<LightIntensityRepository>().Insert(lightModel);
@@ -99,7 +99,7 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
                     {
                         Id = ObjectId.Empty,
                         SensorId = data.SensorId,
-                        SurfaceTemperatureValue = data.Value,
+                        Value = data.Value,
                         CreatedAt = data.Timestamp
                     };
                     serciceProvider.GetRequiredService<SurfaceTemperatureRepository>().Insert(temperatureModel);
@@ -109,7 +109,7 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
                     {
                         Id = ObjectId.Empty,
                         SensorId = data.SensorId,
-                        VibrationsValue = data.Value,
+                        Value = data.Value,
                         CreatedAt = data.Timestamp
                     };
                     serciceProvider.GetRequiredService<VibrationsRepository>().Insert(vibrationsModel);

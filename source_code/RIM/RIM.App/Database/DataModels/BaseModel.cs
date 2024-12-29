@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace RIM.App.Database.DataModels;
 
-public class LightIntensityModel
+public abstract class BaseModel
 {
 
     [BsonId]
@@ -15,6 +15,6 @@ public class LightIntensityModel
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public required DateTime CreatedAt { get; set; }
 
-    public required double LightIntensityValue { get; set; }
+    public required double Value { get; set; }
 
 }

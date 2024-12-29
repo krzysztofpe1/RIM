@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using RIM.App.Configurations;
 using RIM.App.Database.Repositories;
 using RIM.App.Mqtt;
+using RIM.App.Services;
 
 namespace RIM.App;
 
@@ -13,6 +14,7 @@ public static class StartupExtensions
     {
         services.ConfigureMongoDbClient();
         services.AddRepositories();
+        services.AddServices();
         services.AddMqtt();
     }
 
@@ -42,6 +44,11 @@ public static class StartupExtensions
         services.AddScoped<LightIntensityRepository>();
         services.AddScoped<SurfaceTemperatureRepository>();
         services.AddScoped<VibrationsRepository>();
+    }
+
+    private static void AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<SensorsDataService>();
     }
 
     private static void AddMqtt(this IServiceCollection services)
