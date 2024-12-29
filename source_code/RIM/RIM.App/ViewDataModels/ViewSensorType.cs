@@ -1,9 +1,13 @@
-﻿namespace RIM.App.ViewDataModels;
+﻿using System.ComponentModel;
+
+namespace RIM.App.ViewDataModels;
 
 public enum ViewSensorType
 {
     Speed,
-    LightIntensity,
-    SurfaceTemperature,
-    Vibrations
+    [Description("Light Intensity")]
+    Light,
+    [Description("Surface Temperature")]
+    Temperature,
+    Vibration
 }

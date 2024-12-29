@@ -6,8 +6,8 @@ using MQTTnet;
 using RIM.App.Configurations;
 using RIM.App.Database.DataModels;
 using RIM.App.Database.Repositories;
-using RIM.App.Mqtt.DataModels;
 using RIM.App.Utils;
+using RIM.App.Mqtt.DataModels;
 
 namespace RIM.App.Mqtt;
 
@@ -71,50 +71,17 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
         {
             logger.LogInformation(
                 $"Received Sensor Data: \"Sensor ID: {data.SensorId}, Type: {data.SensorType}, Value: {data.Value}, Timestamp: {data.Timestamp}\".");
-            var serciceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
-            switch (data.SensorType)
+            var repository = serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<SensorDataModelRepository>();
+            
+            var sensorDataModel = new SensorDataModel
             {
-                case SensorType.Speed:
-                    var speedModel = new SpeedModel()
-                    {
-                        Id = ObjectId.Empty,
-                        SensorId = data.SensorId,
-                        Value = data.Value,
-                        CreatedAt = data.Timestamp
-                    };
-                    serciceProvider.GetRequiredService<SpeedRepository>().Insert(speedModel);
-                    break;
-                case SensorType.Light:
-                    var lightModel = new LightIntensityModel()
-                    {
-                        Id = ObjectId.Empty,
-                        SensorId = data.SensorId,
-                        Value = data.Value,
-                        CreatedAt = data.Timestamp
-                    };
-                    serciceProvider.GetRequiredService<LightIntensityRepository>().Insert(lightModel);
-                    break;
-                case SensorType.Temperature:
-                    var temperatureModel = new SurfaceTemperatureModel()
-                    {
-                        Id = ObjectId.Empty,
-                        SensorId = data.SensorId,
-                        Value = data.Value,
-                        CreatedAt = data.Timestamp
-                    };
-                    serciceProvider.GetRequiredService<SurfaceTemperatureRepository>().Insert(temperatureModel);
-                    break;
-                case SensorType.Vibration:
-                    var vibrationsModel = new VibrationsModel()
-                    {
-                        Id = ObjectId.Empty,
-                        SensorId = data.SensorId,
-                        Value = data.Value,
-                        CreatedAt = data.Timestamp
-                    };
-                    serciceProvider.GetRequiredService<VibrationsRepository>().Insert(vibrationsModel);
-                    break;
-            }
+                SensorId = data.SensorId,
+                SensorType = Enum.Parse<SensorTypeModel>(data.SensorType.ToString()),
+                Value = data.Value,
+                Timestamp = data.Timestamp
+            };
+
+            repository.Insert(sensorDataModel);
         }
         catch (Exception ex)
         {

@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson;
-
-namespace RIM.App.ViewDataModels;
+﻿namespace RIM.App.ViewDataModels;
 
 public class FilterModel
 {
@@ -19,5 +17,9 @@ public class FilterModel
     /// Starting from 0
     /// </summary>
     public int? Page { get; set; }
+
+    public SortedBy? SortBy { get; set; }
+
+    public bool? SortedDescending { get; set; }
 
 }

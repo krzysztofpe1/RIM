@@ -1,6 +1,6 @@
-﻿using RIM.App.Mqtt.DataModels;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using System.Text.Json;
+using RIM.App.Mqtt.DataModels;
 
 namespace RIM.App.Utils;
 

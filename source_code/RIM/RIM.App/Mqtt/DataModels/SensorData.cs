@@ -5,7 +5,7 @@ namespace RIM.App.Mqtt.DataModels;
 
 public class SensorData
 {
-    
+
     public required int SensorId { get; set; }
 
     [JsonConverter(typeof(SensorTypeConverter))]
