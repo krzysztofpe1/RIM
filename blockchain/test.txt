@@ -1,0 +1,127 @@
+(base) PS C:\Studia\Semestr7\Serwisy Internetowe .NET\RIM\blockchain\truffle> truffle console --network development
+truffle(development)> name()
+Uncaught ReferenceError: name is not defined
+truffle(development)> const instance = await SensorContract.deployed();
+undefined
+truffle(development)> const SensorContract = artifacts.require("SensorContract");
+const instance = await SensorContract.deundefined
+truffle(development)> ployed();const instance = await SensorContract.de
+evalmachine.<anonymous>:0
+ployed();const instance = await SensorContract.de
+                          ^^^^^
+
+Uncaught:
+SyntaxError: await is only valid in async functions and the top level bodies of modules
+truffle(development)> const SensorContract = artifacts.require("SensorContract");
+Uncaught SyntaxError: Identifier 'SensorContract' has already been declared
+truffle(development)> const instance = await SensorContract.deployed();
+Uncaught SyntaxError: Identifier 'instance' has already been declared
+truffle(development)> await instance.name()
+'Sensor Token'
+truffle(development)> await instance.symbol()
+'SEN'
+truffle(development)> await instance.decimals()
+BN { negative: 0, words: [ 18, <1 empty item> ], length: 1, red: null }
+truffle(development)> await instance.totalSupply()
+BN {
+  negative: 0,
+  words: [ 16777216, 62077800, 20718012, 3, <1 empty item> ],
+  length: 4,
+  red: null
+}
+truffle(development)> await instance.balanceOf()
+Uncaught Error: Invalid number of parameters for "balanceOf". Got 0 expected 1!
+    at evalmachine.<anonymous>:1:26
+    at evalmachine.<anonymous>:2:48
+    at sigintHandlersWrap (node:vm:258:12)
+    at Script.runInContext (node:vm:131:14)
+    at runScript (C:\Users\krzys\AppData\Roaming\npm\node_modules\truffle\build\webpack:\packages\core\lib\console.js:505:1)
+    at Console.interpret (C:\Users\krzys\AppData\Roaming\npm\node_modules\truffle\build\webpack:\packages\core\lib\console.js:520:1)
+    at bound (node:domain:432:15)
+    at REPLServer.runBound [as eval] (node:domain:443:12)
+    at REPLServer.onLine (node:repl:929:10)
+    at REPLServer.emit (node:events:514:28)
+    at REPLServer.emit (node:domain:488:12)
+    at REPLServer.[_onLine] [as _onLine] (node:internal/readline/interface:416:12)
+    at REPLServer.[_line] [as _line] (node:internal/readline/interface:887:18)
+    at REPLServer.[_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1265:22)
+    at REPLServer.self._ttyWrite (node:repl:1024:9)
+    at ReadStream.onkeypress (node:internal/readline/interface:264:20)
+    at ReadStream.emit (node:events:514:28)
+    at ReadStream.emit (node:domain:488:12)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>) {
+  hijackedStack: 'Error: Invalid number of parameters for "balanceOf". Got 0 expected 1!\n' +
+    '    at Object.InvalidNumberOfParams (C:\\Users\\krzys\\AppData\\Roaming\\npm\\node_modules\\truffle\\build\\webpack:\\node_modules\\web3-core-helpers\\lib\\errors.js:33:1)\n' +
+    '    at Object._createTxObject (C:\\Users\\krzys\\AppData\\Roaming\\npm\\node_modules\\truffle\\build\\webpack:\\node_modules\\web3-eth-contract\\lib\\index.js:712:1)\n' +   
+    '    at C:\\Users\\krzys\\AppData\\Roaming\\npm\\node_modules\\truffle\\build\\webpack:\\packages\\contract\\lib\\execute.js:175:1\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:95:5)'
+}
+truffle(development)>
+
+
+const SensorContract = artifacts.require("SensorContract");
+const instance = await SensorContract.deployed();
+
+await instance.name()
+
+await instance.symbol()
+
+(await instance.decimals()).toString()
+
+(await instance.totalSupply()).toString()
+
+const accounts = await web3.eth.getAccounts();
+console.log(accounts);
+
+//Trzeba wywołać dwie komendy za kolejny zarem usunąć let
+let ownerBalance = await instance.balanceOf(accounts[0]);
+console.log(ownerBalance.toString());
+
+await instance.transfer(accounts[1], 100);
+
+await instance.approve(accounts[2], 500);
+
+let allowanceValue = await instance.allowance(accounts[0], accounts[2]);
+console.log(allowanceValue.toString());
+
+//Wymaga, by wcześniej właściciel tokenów użył approve(...)
+//Przykład: accounts[2] przesyła 200 tokenów z konta [0] do konta [3]:
+await instance.transferFrom(accounts[0], accounts[3], 200, { from: accounts[2] });
+
+
+BLOK
+
+let blockNumber = await web3.eth.getBlockNumber();
+console.log(blockNumber);
+
+Wymaga, by wcześniej właściciel tokenów użył approve(...)
+
+
+
+
+
+
+
+
+  18 truffle init
+  19 ganache --port 7545 --accounts 20 --defaultBalanceEther 200 --db ./blockchain-data
+  20 clear
+  21 ganache --port 7545 --accounts 20 --defaultBalanceEther 200 --db ./blockchain-data
+
+
+   1 try { . "c:\Users\krzys\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+   2 truffle compile
+   3 cd .\truffle\
+   4 truffle compile
+   5 truffle compile
+   6 truffle migrate --network development
+   7 truffle migrate --network development
+   8 dotnet add package Newtonsoft.Json
+   9 ls
+  10 cd ..
+  11 cd .\C#block\
+  12 dotnet add package Newtonsoft.Json
+  13 cd .\C#block\
+
+     4 truffle console --network development

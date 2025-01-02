@@ -1,0 +1,34 @@
+version: '4'
+
+services:
+  truffle:
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile.truffle
+    container_name: truffle
+    volumes:
+      - truffle-data:/truffle
+    working_dir: /truffle
+    networks:
+      - blockchain
+
+  # csharp:
+  #   build:
+  #     context: ./C#block
+  #     dockerfile: Dockerfile.C#
+  #   container_name: csharp
+  #   volumes:
+  #     - truffle-data:/truffle
+  #   depends_on:
+  #     - truffle
+  #   working_dir: /app
+  #   command: >
+  #     dotnet run
+  #   networks:
+  #     - blockchain
+
+volumes:
+  truffle-data:
+
+networks:
+  blockchain:
