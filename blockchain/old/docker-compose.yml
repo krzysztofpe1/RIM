@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+# ganach do blockchain na który dostarcza zestaw kluczy prywatnych
+  ganache:
+    image: trufflesuite/ganache-cli
+    command: [ "--networkId", "5777", "--port", "7545", "--mnemonic", "One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them." ]
+    ports:
+      - "7545:7545"
+
+# truffle opowiada za deploy smart contractów i testowanie ich
+  truffle:
+    image: trufflesuite/truffle
+    working_dir: /contract
+    volumes:
+      - ./contract:/contract
+    depends_on:
+      - ganache
+    command: /bin/sh -c "truffle compile && truffle migrate --network development"
+    environment:
+      - GANACHE_URL=http://ganache:7545
+# 
+  csharp-app:
+    build: 
+      context: ./csharp-app
+      dockerfile: Dockerfile
+    depends_on:
+      - ganache
+    ports:
+      - "8080:80"
+    environment:
+      - GANACHE_URL=http://ganache:7545
+      # i inne potrzebne zmienne (np. klucz prywatny do mintowania)
