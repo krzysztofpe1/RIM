@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   mqtt-broker:
     image: eclipse-mosquitto:2.0
@@ -35,6 +34,51 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+
+  ganache:
+    build:
+      context: ./blockchain/blockchain/ganache
+      dockerfile: Dockerfile.ganache
+    container_name: ganache
+    ports:
+      - "7545:7545"
+    volumes:
+      - ./docker-data:/ganache
+    # command: >
+    #   ganache --port 7545 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 --mnemonic "One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them."
+    #   > ganache-output.log 2>&1
+
+
+  truffle:
+    build:
+      context: ./blockchain/blockchain/truffle
+      dockerfile: Dockerfile.truffle
+    container_name: truffle
+    volumes:
+      - ./docker-data:/truffle_data
+      - ./docker-data:/ganache
+    depends_on:
+      - ganache
+    working_dir: /truffle
+    # command: />
+    #   truffle migrate --reset --network development
+
+  # csharp:
+  #   build:
+  #     context: ./C#block
+  #     dockerfile: Dockerfile.C#
+  #   container_name: csharp
+  #   volumes:
+  #     - ganache-data:/ganache
+  #     - truffle-data:/truffle
+  #   depends_on:
+  #     - truffle
+  #     - ganache
+  #   working_dir: /app
+  #   command: >
+  #     dotnet run
+  #   networks:
+  #     - blockchain
 
   # rim-app:
   #   build:
