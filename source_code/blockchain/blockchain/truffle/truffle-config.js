@@ -1,7 +1,7 @@
 module.exports = {
   networks: {
     development: {
-      host: "ganache",        // Nazwa kontenera Ganache w Docker Compose. 127.0.0.1 - gdy nie używamy Dockera
+      host: "127.0.0.1",        // Nazwa kontenera Ganache w Docker Compose. 127.0.0.1 - gdy nie używamy Dockera
       port: 7545,            
       network_id: 581234,    // ID sieci, musi być zgodne z konfiguracją Ganache
       gas: 3000000,          // Limit gazu

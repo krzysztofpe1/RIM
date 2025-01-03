@@ -43,10 +43,8 @@ services:
     ports:
       - "7545:7545"
     volumes:
-      - ./docker-data:/ganache
-    # command: >
-    #   ganache --port 7545 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 --mnemonic "One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them."
-    #   > ganache-output.log 2>&1
+      - ./docker-data:/docker-data
+
 
 
   truffle:
@@ -55,30 +53,29 @@ services:
       dockerfile: Dockerfile.truffle
     container_name: truffle
     volumes:
-      - ./docker-data:/truffle_data
-      - ./docker-data:/ganache
+      - docker-data/blockchain:/docker-data
     depends_on:
       - ganache
     working_dir: /truffle
-    # command: />
-    #   truffle migrate --reset --network development
 
-  # csharp:
-  #   build:
-  #     context: ./C#block
-  #     dockerfile: Dockerfile.C#
-  #   container_name: csharp
-  #   volumes:
-  #     - ganache-data:/ganache
-  #     - truffle-data:/truffle
-  #   depends_on:
-  #     - truffle
-  #     - ganache
-  #   working_dir: /app
-  #   command: >
-  #     dotnet run
-  #   networks:
-  #     - blockchain
+
+  csharp:
+    build:
+      context: ./blockchain/blockchain/C#block
+      dockerfile: Dockerfile.C#
+    container_name: csharp
+    volumes:
+      - docker-data/blockchain:/docker-data
+    depends_on:
+      - truffle
+      - ganache
+    working_dir: /app
+    command: >
+      dotnet run
+
+volumes:
+  docker-data:
+    driver: local
 
   # rim-app:
   #   build:

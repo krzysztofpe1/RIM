@@ -4,7 +4,7 @@ RUN npm install -g ganache
 
 WORKDIR /ganache
 
-CMD ["sh", "-c", "ganache --port 7545 --host 0.0.0.0 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 | tee /ganache/ganache-output.log"]
+CMD ["sh", "-c", "ganache --port 7545 --host 0.0.0.0 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 | tee /docker-data/ganache-output.log"]
 
 
 # CMD ["sh", "-c", "ganache --port 7545 --host 0.0.0.0 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 > /ganache/ganache-output.log 2>&1"]
