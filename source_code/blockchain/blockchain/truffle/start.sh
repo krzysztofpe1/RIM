@@ -16,4 +16,5 @@ truffle migrate --network development
 
 cp /truffle/build/contracts/SensorContract.json /docker-data
 echo "spie sobie"
+cp /docker-data/ganache-output.log /docker-data/ganache-output2.log
 sleep 300

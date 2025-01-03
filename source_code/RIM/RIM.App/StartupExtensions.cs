@@ -10,11 +10,11 @@ namespace RIM.App;
 public static class StartupExtensions
 {
 
-    public static void ConfigureServices(this IServiceCollection services)
+    public static async Task ConfigureServices(this IServiceCollection services)
     {
         services.ConfigureMongoDbClient();
         services.AddRepositories();
-        services.AddServices();
+        await services.AddServices();
         services.AddMqtt();
     }
 
@@ -43,9 +43,18 @@ public static class StartupExtensions
         services.AddScoped<SensorDataModelRepository>();
     }
 
-    private static void AddServices(this IServiceCollection services)
+    private static async Task AddServices(this IServiceCollection services)
     {
+        var configuration = services.GetConfiguration();
         services.AddScoped<SensorsDataService>();
+        services.Configure<BlockchainSettings>(configuration.GetSection("Blockchain"));
+
+        var blockchainSettings = services.BuildServiceProvider().GetRequiredService<IOptions<BlockchainSettings>>();
+        var blockchainService = new BlockchainService(blockchainSettings);
+
+        await blockchainService.InitializeAsync();
+
+        services.AddSingleton(blockchainService);
     }
 
     private static void AddMqtt(this IServiceCollection services)

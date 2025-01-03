@@ -6,4 +6,4 @@ COPY . /app
 RUN dotnet restore
 RUN dotnet build
 
-CMD ["dotnet", "run"]
+CMD ["dotnet", "run", "--configuration", "Release"]

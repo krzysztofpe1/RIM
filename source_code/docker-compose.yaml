@@ -43,7 +43,7 @@ services:
     ports:
       - "7545:7545"
     volumes:
-      - ./docker-data:/docker-data
+      - ./docker-data/blockchain:/docker-data
 
 
 
@@ -53,40 +53,29 @@ services:
       dockerfile: Dockerfile.truffle
     container_name: truffle
     volumes:
-      - docker-data/blockchain:/docker-data
+      - ./docker-data/blockchain:/docker-data
     depends_on:
       - ganache
     working_dir: /truffle
 
-
-  csharp:
+  rim-app:
     build:
-      context: ./blockchain/blockchain/C#block
-      dockerfile: Dockerfile.C#
-    container_name: csharp
-    volumes:
-      - docker-data/blockchain:/docker-data
+      context: ./RIM
+      dockerfile: RIM.App/Dockerfile
+    container_name: rim-app
     depends_on:
-      - truffle
+      - mongodb
+      - mqtt-broker
       - ganache
-    working_dir: /app
-    command: >
-      dotnet run
+      - truffle
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      MONGO_CONNECTION_STRING: mongodb://RIMuser:zaq1%40WSX@mongodb:27017
+    volumes:
+      - ./docker-data/blockchain:/docker-data
 
 volumes:
   docker-data:
     driver: local
-
-  # rim-app:
-  #   build:
-  #     context: ./RIM
-  #     dockerfile: RIM.App/Dockerfile
-  #   container_name: rim-app
-  #   depends_on:
-  #     - mongodb
-  #     - mqtt-broker
-  #   ports:
-  #     - "8080:8080"
-  #     - "8081:8081"
-  #   environment:
-  #     MONGO_CONNECTION_STRING: mongodb://RIMuser:zaq1%40WSX@mongodb:27017

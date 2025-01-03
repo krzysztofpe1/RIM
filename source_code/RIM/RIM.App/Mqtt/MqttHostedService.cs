@@ -8,6 +8,7 @@ using RIM.App.Database.DataModels;
 using RIM.App.Database.Repositories;
 using RIM.App.Utils;
 using RIM.App.Mqtt.DataModels;
+using RIM.App.Services;
 
 namespace RIM.App.Mqtt;
 
@@ -56,7 +57,7 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
             var data = JsonSerializer.Deserialize<SensorData>(payload, options);
             if (data != null)
             {
-                HandleSensorData(data);
+                await HandleSensorData(data);
             }
         }
         catch (Exception ex)
@@ -65,14 +66,18 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
         }
     }
 
-    private void HandleSensorData(SensorData data)
+    private async Task HandleSensorData(SensorData data)
     {
         try
         {
             logger.LogInformation(
                 $"Received Sensor Data: \"Sensor ID: {data.SensorId}, Type: {data.SensorType}, Value: {data.Value}, Timestamp: {data.Timestamp}\".");
-            var repository = serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<SensorDataModelRepository>();
-            
+
+            var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+
+            var repository = serviceProvider.GetRequiredService<SensorDataModelRepository>();
+            var blockchainService = serviceProvider.GetRequiredService<BlockchainService>();
+
             var sensorDataModel = new SensorDataModel
             {
                 SensorId = data.SensorId,
@@ -80,6 +85,10 @@ public class MqttHostedService(IOptions<MqttClientSettings> mqttClientSettings, 
                 Value = data.Value,
                 Timestamp = data.Timestamp
             };
+
+            var destinationAccount = blockchainService.GetAllAccounts()[data.SensorId + 1];
+
+            await blockchainService.TransferAsync(destinationAccount!, 10);
 
             repository.Insert(sensorDataModel);
         }

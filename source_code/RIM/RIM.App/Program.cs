@@ -2,7 +2,7 @@ namespace RIM.App
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
@@ -10,7 +10,7 @@ namespace RIM.App
             // Add services to the container.
             services.AddRazorPages();
 
-            services.ConfigureServices();
+            await services.ConfigureServices();
 
             var app = builder.Build();
 
@@ -22,7 +22,7 @@ namespace RIM.App
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

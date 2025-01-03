@@ -40,4 +40,10 @@ public class SensorDataModelRepository(IMongoClient client, IOptions<RimDbSettin
         return _collection.CountDocuments(filter);
     }
 
+    public List<(int, SensorTypeModel)> GetSensors()
+    {
+        var ids = _collection.AsQueryable().Select(x =>  x.SensorId).Distinct().ToList();
+
+        return ids.Select(id => (id, _collection.AsQueryable().First(x => x.SensorId == id).SensorType)).ToList();
+    }
 }

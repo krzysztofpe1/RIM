@@ -12,6 +12,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.1.0" />
     <PackageReference Include="MQTTnet.AspNetCore" Version="4.3.7.1207" />
+    <PackageReference Include="Nethereum.Accounts" Version="4.27.1" />
+    <PackageReference Include="Nethereum.Contracts" Version="4.27.1" />
+    <PackageReference Include="Nethereum.RPC" Version="4.27.1" />
+    <PackageReference Include="Nethereum.Web3" Version="4.27.1" />
   </ItemGroup>
 
 </Project>

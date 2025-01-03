@@ -1,4 +1,5 @@
-﻿using RIM.App.Database.DataModels;
+﻿using System.Reflection;
+using RIM.App.Database.DataModels;
 using RIM.App.Database.Repositories;
 using RIM.App.ViewDataModels;
 
@@ -70,6 +71,11 @@ public class SensorsDataService(SensorDataModelRepository repository)
         if (filterModel is { ResultsPerPage: not null })
             return count / filterModel.ResultsPerPage.Value;
         return 1;
+    }
+
+    public List<(int, SensorTypeModel)> GetSensors()
+    {
+        return repository.GetSensors();
     }
 
 }
