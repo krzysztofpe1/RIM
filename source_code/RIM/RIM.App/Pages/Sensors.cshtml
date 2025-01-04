@@ -1,0 +1,196 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using RIM.App.Utils
+@using RIM.App.ViewDataModels
+@model RIM.App.Pages.SensorsModel
+@{
+    ViewData["Title"] = "Sensors";
+}
+
+@section Styles
+{
+    <link href="css/Sensors.css" rel="stylesheet" />
+}
+
+<h1>Sensors</h1>
+
+<section>
+    <form method="post" class="mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label asp-for="Filter.FromDate" class="form-label">From Date</label>
+                <input type="datetime-local" asp-for="Filter.FromDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Filter.ToDate" class="form-label">To Date</label>
+                <input type="datetime-local" asp-for="Filter.ToDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Filter.SensorType" class="form-label">Sensor Type</label>
+                <select asp-for="Filter.SensorType" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var type in Enum.GetValues<ViewSensorType>())
+                    {
+                        if (type == Model.Filter.SensorType)
+                        {
+                            <option value="@type" selected>@FilterModelExtensions.EnumExtensions.DisplayName(@type)</option>
+                        }
+                        else
+                        {
+                            <option value="@type">@FilterModelExtensions.EnumExtensions.DisplayName(@type)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Filter.SensorId" class="form-label">Sensor ID</label>
+                <input type="number" asp-for="Filter.SensorId" class="form-control" />
+            </div>
+            <input type="hidden" asp-for="Filter.SortBy" id="sortBy" />
+            <input type="hidden" asp-for="Filter.SortedDescending" id="sortedDescending" />
+            <div class="col-md-2 d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary" style="width: 100px;">Search</button>
+                <button type="submit" asp-page-handler="DownloadCsv" class="btn btn-primary" style="width: 100px;">Download CSV</button>
+                <button type="submit" asp-page-handler="DownloadJson" class="btn btn-primary" style="width: 100px;">Download JSON</button>
+                <button type="button" class="btn btn-primary" style="width: 100px;" onclick="toggleTableVisibility()">Display Graph</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<section>
+    <table class="table table-striped sortable-table" id="sensorsTable">
+        <thead>
+            <tr>
+                <th scope="col" data-sort="SensorId">Sensor ID</th>
+                <th scope="col" data-sort="SensorType">Sensor Type</th>
+                <th scope="col" data-sort="Value">Value</th>
+                <th scope="col" data-sort="Timestamp">Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sensor in Model.Results)
+            {
+                <tr>
+                    <td>@sensor.SensorId</td>
+                    <td>@FilterModelExtensions.EnumExtensions.DisplayName(sensor.SensorType)</td>
+                    <td>@sensor.Value</td>
+                    <td>@sensor.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div id="sensorsGraph" class="d-none">
+        <canvas id="sensorChart" width="400" height="200"></canvas>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const table = document.querySelector('.sortable-table');
+            const headers = table.querySelectorAll('th[data-sort]');
+
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const sortKey = header.dataset.sort; // Pobranie klucza sortowania
+                    const rows = Array.from(table.querySelector('tbody').rows);
+                    const isAscending = header.classList.contains('ascending');
+
+                    rows.sort((a, b) => {
+                        const aValue = a.querySelector(`[data-key="${sortKey}"]`)?.textContent || a.cells[header.cellIndex].textContent;
+                        const bValue = b.querySelector(`[data-key="${sortKey}"]`)?.textContent || b.cells[header.cellIndex].textContent;
+
+                        return isAscending
+                            ? aValue.localeCompare(bValue, undefined, { numeric: true })
+                            : bValue.localeCompare(aValue, undefined, { numeric: true });
+                    });
+
+                    rows.forEach(row => table.querySelector('tbody').appendChild(row));
+
+                    headers.forEach(h => h.classList.remove('ascending', 'descending'));
+                    header.classList.toggle('ascending', !isAscending);
+                    header.classList.toggle('descending', isAscending);
+
+                    // Wpisanie wartości z enuma do input
+                    document.getElementById('sortBy').value = sortKey;
+
+                    // Ustawienie wartości sortowania rosnąco/malejąco
+                    document.getElementById('sortedDescending').value = !isAscending ? "true" : "false";
+                });
+            });
+        });
+    </script>
+    <script>
+        function toggleTableVisibility() {
+            const table = document.getElementById('sensorsTable');
+            const graph = document.getElementById('sensorsGraph');
+            table.classList.toggle('d-none');
+            graph.classList.toggle('d-none');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script>
+                // Parse the sensor data provided by Razor Pages
+        const sensorData = @Html.Raw(Json.Serialize(Model.Results));
+
+        // Initialize empty arrays for each sensorId (0 to 15)
+        const filteredData = Array.from({ length: 16 }, () => []);
+
+        // Populate filteredData with values grouped by sensorId
+        sensorData.forEach(item => {
+            filteredData[item.sensorId].push(item);
+        });
+
+        // Map filteredData to datasets for Chart.js
+        const datasets = filteredData.map((group, sensorId) => ({
+            label: `Sensor ${ sensorId }`, 
+            data: group.map(item => ({
+                x: new Date(item.createdAt), // Convert createdAt to Date object
+                y: item.value // Use the value from data
+            })),
+            fill: false,
+            borderColor: `hsl(${ sensorId * 22}, 70%, 50%)`,
+            tension: 0.1 // Smooth lines
+        }));
+
+        // Create a Chart.js chart
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line', // Line chart
+            data: {
+                datasets: datasets // Use the prepared datasets
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time', // Set x-axis as time-based
+                        time: {
+                            unit: 'second', // Group time data by seconds
+                            displayFormats: {
+                                second: 'HH:mm:ss' // Display format for time
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Czas (HH:mm:ss)' // Label for the x-axis
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Wartość' // Label for the y-axis
+                        },
+                        beginAtZero: true // Start y-axis at zero
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top' // Position the legend at the top
+                    }
+                }
+            }
+        });
+    </script>
+}

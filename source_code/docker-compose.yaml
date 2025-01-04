@@ -1,0 +1,81 @@
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker-init/mosquitto/:/mosquitto/config
+      - ./docker-data/mosquitto/data:/mosquitto/data
+      - ./docker-data/mosquitto/log:/mosquitto/log
+
+  data-generator:
+    build:
+      context: ./generator
+      dockerfile: Dockerfile
+    container_name: data-generator
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_PORT=1883
+      - MQTT_TOPIC=sensor/data
+    # network_mode: "host"
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./docker-data/mongo/data/db:/data/db
+      - ./docker-init/mongo:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  ganache:
+    build:
+      context: ./blockchain/blockchain/ganache
+      dockerfile: Dockerfile.ganache
+    container_name: ganache
+    ports:
+      - "7545:7545"
+    volumes:
+      - ./docker-data/blockchain:/docker-data
+
+
+
+  truffle:
+    build:
+      context: ./blockchain/blockchain/truffle
+      dockerfile: Dockerfile.truffle
+    container_name: truffle
+    volumes:
+      - ./docker-data/blockchain:/docker-data
+    depends_on:
+      - ganache
+    working_dir: /truffle
+
+  rim-app:
+    build:
+      context: ./RIM
+      dockerfile: RIM.App/Dockerfile
+    container_name: rim-app
+    depends_on:
+      - mongodb
+      - mqtt-broker
+      - ganache
+      - truffle
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      MONGO_CONNECTION_STRING: mongodb://RIMuser:zaq1%40WSX@mongodb:27017
+    volumes:
+      - ./docker-data/blockchain:/docker-data
+
+volumes:
+  docker-data:
+    driver: local

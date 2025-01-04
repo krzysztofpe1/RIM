@@ -1,0 +1,45 @@
+# FROM node:20
+
+# # RUN npm install -g ganache
+# RUN npm install -g truffle
+
+# WORKDIR /truffle
+# COPY . /truffle
+# COPY ["start.sh", "truffle/"]
+
+# RUN chmod +x /truffle/start.sh
+# # RUN ls -l /truffle
+# # CMD ["/truffle/start.sh"]
+
+# CMD ["bash", "/truffle/start.sh"]
+# CMD ["bash", "-c", "ls -l /truffle"]
+
+
+
+# CMD ["truffle", "migrate", "--network", "development"]
+# CMD ["sh", "-c", "curl http://ganache:7545 && truffle migrate --network development"]
+# CMD ["sh", "-c", "curl http://127.0.0.1:7545"]
+FROM node:20
+
+RUN npm install -g truffle
+
+WORKDIR /truffle
+
+COPY . /truffle
+
+COPY ["start.sh", "/truffle/start.sh"]
+
+
+# RUN echo '#!/bin/bash\n\n\
+# echo "Czekam na uruchomienie Ganache..."\n\
+# until curl --silent http://127.0.0.1:7545 > /dev/null; do\n\
+#     echo "Ganache jeszcze nie gotowe..."\n\
+#     sleep 1\n\
+# done\n\n\
+# echo "Ganache uruchomione. Startuję Truffle migrację."\n\n\
+# truffle migrate --network development' > /truffle/start3.sh
+
+RUN chmod 777 /truffle/start.sh
+
+CMD ["bash", "/truffle/start.sh"]
+# CMD ["/truffle/start2.sh"]

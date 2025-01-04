@@ -5,7 +5,7 @@ import json
 import os
 from threading import Thread
 
-MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")  # Domyślnie 'localhost', jeśli zmienna nie jest ustawiona
+MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 MQTT_TOPIC = os.getenv("MQTT_TOPIC", "sensor/data")
 
@@ -67,33 +67,6 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping simulation...")
-
-    # sensor_count = 16
-    # publish_interval = 5
-    #
-    # generator = GeneratorManager(MQTT_BROKER, MQTT_PORT, MQTT_TOPIC)
-    #
-    #
-    # for sensor_id in range(sensor_count):
-    #     generator.publish_sensor_data(sensor_id, publish_interval)
-
-
-
-#
-# def on_connect(client, userdata, flags, rc):
-#     print("Connected with result code " + str(rc))
-# from paho.mqtt import client as mqtt_client
-
-# def main():
-#     from paho.mqtt import client as mqtt_client
-#     import random
-#
-#     broker = 'broker.emqx.io'
-#     port = 1883
-#     topic = "python/mqtt"
-#     client_id = f'python-mqtt-{random.randint(0, 1000)}'
-#     client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, client_id)
-#     print(client)
 
 if __name__ == '__main__':
     main()

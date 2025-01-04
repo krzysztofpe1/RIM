@@ -1,0 +1,14 @@
+FROM node:20
+
+RUN npm install -g ganache
+
+WORKDIR /ganache
+
+CMD ["sh", "-c", "ganache --port 7545 --host 0.0.0.0 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 | tee /docker-data/ganache-output.log"]
+
+
+# CMD ["sh", "-c", "ganache --port 7545 --host 0.0.0.0 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 > /ganache/ganache-output.log 2>&1"]
+
+# CMD ["sh", "-c", "ganache --port 7545 --accounts 10 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 > ganache-output.log & node saveAccounts.js"]
+# CMD ["ganache", "--port", "7545", "--accounts", "10", "--defaultBalanceEther", "200", "--chain.chainId", "581234", "--chain.networkId", "581234"]
+# CMD ganache --port 7545 --accounts 20 --defaultBalanceEther 200 --chain.chainId 581234 --chain.networkId 581234 > ganache-output.log 2>&1 && node saveAccounts.js

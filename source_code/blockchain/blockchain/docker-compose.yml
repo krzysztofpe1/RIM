@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  ganache:
+    build:
+      context: ./ganache
+      dockerfile: Dockerfile.ganache
+    container_name: ganache
+    ports:
+      - "7545:7545"
+    volumes:
+      - docker-data:/docker-data
+
+  truffle:
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile.truffle
+    container_name: truffle
+    volumes:
+      - docker-data:/docker-data
+    depends_on:
+      - ganache
+    working_dir: /truffle
+
+  csharp:
+    build:
+      context: ./C#block
+      dockerfile: Dockerfile.C#
+    container_name: csharp
+    volumes:
+      - docker-data:/docker-data
+    depends_on:
+      - truffle
+      - ganache
+    working_dir: /app
+    command: >
+      dotnet run
+
+volumes:
+  docker-data:
+    driver: local

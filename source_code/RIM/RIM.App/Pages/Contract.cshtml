@@ -1,0 +1,23 @@
+﻿@page
+@model RIM.App.Pages.ContractModel
+@{
+}
+
+@section Styles
+{
+    <link href="css/Dashboard.css" rel="stylesheet" />
+}
+
+<div class="sensorsView">
+
+    @foreach (var sensor in Model.AccountsWithBalance)
+    {
+        <div class="sensor">
+            <h3>Sensor ID: @sensor.SensorId</h3>
+            <p>Type: @sensor.SensorType</p>
+            <p>Wallet address: @sensor.WalletAddress</p>
+            <p>Balance: @sensor.Balance</p>
+        </div>
+    }
+
+</div>
