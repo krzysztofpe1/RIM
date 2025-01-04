@@ -130,55 +130,67 @@
             graph.classList.toggle('d-none');
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script>
-        // Parse the sensor data provided by Razor Pages
+                // Parse the sensor data provided by Razor Pages
         const sensorData = @Html.Raw(Json.Serialize(Model.Results));
 
-        // Extract labels and data
-        const labels = sensorData.map(data => {
-            const date = new Date(data.CreatedAt);
-            return !isNaN(date) ? date.toLocaleString() : "Invalid Date"; // Add fallback if date parsing fails
+        // Initialize empty arrays for each sensorId (0 to 15)
+        const filteredData = Array.from({ length: 16 }, () => []);
+
+        // Populate filteredData with values grouped by sensorId
+        sensorData.forEach(item => {
+            filteredData[item.sensorId].push(item);
         });
 
-        const values = sensorData.map(data => data.Value);
+        // Map filteredData to datasets for Chart.js
+        const datasets = filteredData.map((group, sensorId) => ({
+            label: `Sensor ${ sensorId }`, 
+            data: group.map(item => ({
+                x: new Date(item.createdAt), // Convert createdAt to Date object
+                y: item.value // Use the value from data
+            })),
+            fill: false,
+            borderColor: `hsl(${ sensorId * 22}, 70%, 50%)`,
+            tension: 0.1 // Smooth lines
+        }));
 
-        // Debugging: Log data to console
-        console.log("Sensor Data:", sensorData);
-        console.log("Labels:", labels);
-        console.log("Values:", values);
-
-        // Create a chart
+        // Create a Chart.js chart
         const ctx = document.getElementById('sensorChart').getContext('2d');
         const sensorChart = new Chart(ctx, {
-            type: 'line', // Change to other types like 'bar' if needed
+            type: 'line', // Line chart
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Sensor Values',
-                    data: values,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 1
-                }]
+                datasets: datasets // Use the prepared datasets
             },
             options: {
                 scales: {
                     x: {
+                        type: 'time', // Set x-axis as time-based
+                        time: {
+                            unit: 'second', // Group time data by seconds
+                            displayFormats: {
+                                second: 'HH:mm:ss' // Display format for time
+                            }
+                        },
                         title: {
                             display: true,
-                            text: 'Time'
+                            text: 'Czas (HH:mm:ss)' // Label for the x-axis
                         }
                     },
                     y: {
                         title: {
                             display: true,
-                            text: 'Value'
+                            text: 'Wartość' // Label for the y-axis
                         },
-                        beginAtZero: true
+                        beginAtZero: true // Start y-axis at zero
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top' // Position the legend at the top
                     }
                 }
             }
         });
     </script>
-
 }
